@@ -314,6 +314,31 @@ protected:
             log_file = nullptr;
         }
     }
+    char * wbegin() override{
+        return mmap_file + block_pos; 
+    }
+    char * wend() override{
+        return mmap_file + MMAP_BLOCK_SIZE +1; 
+    }
+    void advance(size_t bufLen) override{
+        if (block_pos + bufLen <= MMAP_BLOCK_SIZE)
+        {
+            write_pos += bufLen;
+            block_pos += bufLen;
+        }
+        else
+        {
+            int32_t freeSize = MMAP_BLOCK_SIZE - block_pos;
+            write_pos += freeSize;
+            block_pos += freeSize;
+
+            memset(mmap_file + block_pos, ' ', freeSize);
+            *(mmap_file + MMAP_BLOCK_SIZE - 1) = '\n';
+
+            remap(write_pos);
+        }
+    }
+
 
     void sink_it_(const details::log_msg &msg) override
     {

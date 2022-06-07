@@ -37,8 +37,9 @@ private:
     T *mmap_file = nullptr;
     std::string file_path;
 
-    void init_mmap_file()
+    void init_mmap_file( const std::string & filePath = "/dev/shm/fmt.log",  uint32_t initSize = mmap_block_size)
     {
+        
         file_path = filePath;
         log_file = fopen(filePath.c_str(), "ab+");
         // fseek(log_file,0,SEEK_END);
@@ -193,7 +194,7 @@ public:
 };
 
 template<typename T, size_t SIZE, typename Allocator>
-FMT_CONSTEXPR20 void basic_shm_buffer<T, SIZE>::grow(size_t size)
+FMT_CONSTEXPR20 void basic_shm_buffer<T, SIZE, Allocator>::grow(size_t size)
 {
 #ifdef FMT_FUZZ
     if (size > 5000)

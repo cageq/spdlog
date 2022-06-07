@@ -21,8 +21,14 @@ public:
     template <class ... Args> 
     bool  format_log(const details::log_msg &msg,  bool log_enabled, bool traceback_enabled, string_view_t fmt,   Args ... args ){
         if (wbegin()){
-            auto rst = fmt::format_to_n(wbegin(), wend()- wbegin(), fmt, args...); 
+        
+            size_t freeSize = wend() - wbegin(); 
+            auto rst = fmt::format_to_n(wbegin(), freeSize, fmt, args...); 
             advance(rst.size); 
+            if (rst.size > freeSize){
+                rst = fmt::format_to_n(wbegin(), freeSize, fmt, args...); 
+                advance(rst.size); 
+            }
             return true; 
         }
         return false;     

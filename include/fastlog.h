@@ -18,7 +18,9 @@
 //#include "sse_itoa.h"
 
 #define DEFAULT_PAGE_SIZE 4096 
+#ifndef MMAP_BLOCK_SIZE 
 #define MMAP_BLOCK_SIZE 1024*1024*8
+#endif 
 
 
 class FastWriter{
