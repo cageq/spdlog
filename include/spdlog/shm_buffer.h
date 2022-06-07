@@ -19,7 +19,7 @@ FMT_BEGIN_NAMESPACE
  
 enum
 {
-    init_shm_size = 1024 * 1024 * 4,
+    init_shm_size = 4096,
     mmap_block_size = 4096
 };
 
@@ -37,7 +37,7 @@ private:
     T *mmap_file = nullptr;
     std::string file_path;
 
-    void init_mmap_file( const std::string & filePath = "/dev/shm/fmt.log",  uint32_t initSize = mmap_block_size)
+    void init_mmap_file( const std::string & filePath = "/dev/shm/fmt.log" )
     {
         
         file_path = filePath;
@@ -45,9 +45,9 @@ private:
         // fseek(log_file,0,SEEK_END);
         // fseek(log_file,0,0);
         log_fd = fileno(log_file);
-        init_size = initSize;
+        init_size = SIZE;
         mmap_blocks = mmap_block_size;
-        ftruncate(log_fd, initSize);
+        ftruncate(log_fd, SIZE);
         block_pos = 0;
         mmap_file = (char *)mmap(NULL, mmap_block_size, PROT_WRITE, MAP_FILE | MAP_SHARED, log_fd, 0);
     }
