@@ -3,6 +3,7 @@
 #include "spdlog/sinks/rotating_file_sink.h"
 #include <iostream>
 #include <chrono>
+#include "spdlog/shm_buffer.h"
 #include "fastlog.h"
 
 using namespace std::chrono;
