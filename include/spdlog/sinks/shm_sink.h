@@ -21,7 +21,7 @@
 #include <mutex>
 
 #define DEFAULT_PAGE_SIZE 4096
-#define MMAP_BLOCK_SIZE 1024 * 1024 * 4
+#define MMAP_BLOCK_SIZE 1024 * 1024 * 8
 
 namespace spdlog {
 namespace sinks {

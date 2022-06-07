@@ -15,6 +15,10 @@
 
 namespace spdlog {
 
+
+
+
+
 // public methods
 SPDLOG_INLINE logger::logger(const logger &other)
     : name_(other.name_)

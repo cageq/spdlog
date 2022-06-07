@@ -27,6 +27,20 @@
 
 #include <vector>
 
+// SFINAE test
+template <typename T>
+class has_format_sink
+{
+    typedef char one;
+    struct two { char x[2]; };
+
+    template <typename C> static one check( decltype(&C::format_sink) ) ;
+    template <typename C> static two check(...);    
+
+public:
+    enum { value = sizeof(check<T>(0)) == sizeof(char) };
+};
+    
 #ifndef SPDLOG_NO_EXCEPTIONS
 #    define SPDLOG_LOGGER_CATCH(location)                                                                                                  \
         catch (const std::exception &ex)                                                                                                   \
