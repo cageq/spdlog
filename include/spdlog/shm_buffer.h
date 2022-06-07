@@ -204,7 +204,7 @@ FMT_CONSTEXPR20 void basic_shm_buffer<T, SIZE, Allocator>::grow(size_t size)
     size_t old_capacity = this->capacity();
     size_t new_capacity = init_shm_size;
 
-    remap();
+    remap(write_pos);
     T *new_data = mmap_file;
     this->set(new_data, new_capacity);
 }

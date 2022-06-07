@@ -23,7 +23,13 @@ if(SPDLOG_BUILD_EXAMPLE_HO)
     target_link_libraries(example_header_only PRIVATE spdlog::spdlog_header_only)
 endif()
 
+include_directories(../include)
 
 
 add_executable(testshm testshm.cpp)
 target_link_libraries(testshm PRIVATE spdlog::spdlog)
+
+
+
+add_executable(testfmt testfmt.cpp)
+target_link_libraries(testfmt  PRIVATE spdlog::spdlog)
