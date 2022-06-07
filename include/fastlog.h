@@ -10,7 +10,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
+#include <memory>
 #include <sys/time.h>
 #include <unistd.h>
 #include <spdlog/fmt/fmt.h>

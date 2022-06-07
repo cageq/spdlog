@@ -17,6 +17,7 @@
 #include <spdlog/common.h>
 #include <spdlog/details/log_msg.h>
 #include <spdlog/details/backtracer.h>
+#include <spdlog/sinks/sink.h>
 
 #ifdef SPDLOG_WCHAR_TO_UTF8_SUPPORT
 #    ifndef _WIN32
@@ -385,7 +386,8 @@ protected:
 //             fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
 // #endif
 
-            details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
+            //details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
+            details::log_msg log_msg(loc, name_, lvl,string_view_t{});
 //             log_it_(log_msg, log_enabled, traceback_enabled);
             log_it_direct_(log_msg, log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
         }
@@ -448,18 +450,33 @@ protected:
     void log_it_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled);
 
     template <class ... Args> 
-    void log_it_direct_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled,string_view_t fmt,  Args &&... args)
+    void  log_it_direct_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled,string_view_t fmt,  Args &&... args)
     {
         if (log_enabled)
         {
             for (auto &sink : sinks_)
             {
-                sink->format_log(log_msg,log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
+                bool ret = sink->format_log(log_msg,log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
+                if (!ret)
+                {
+
+                memory_buf_t buf;   
+    #ifdef SPDLOG_USE_STD_FORMAT
+                fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
+    #else
+                // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
+                fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
+    #endif
+                    //log_msg.payload = std::move(string_view_t(buf.data(), buf.size()));
+
+                     details::log_msg msg (log_msg.source, log_msg.logger_name, log_msg.level, string_view_t(buf.data(), buf.size()));
+                    sink->log(msg);
+                }
             }
         }
         if (traceback_enabled)
         {
-            tracer_.log(log_msg);
+             tracer_.push_back(log_msg);
         }
     }
 
