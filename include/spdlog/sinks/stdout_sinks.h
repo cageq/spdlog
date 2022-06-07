@@ -31,6 +31,8 @@ public:
     stdout_sink_base &operator=(stdout_sink_base &&other) = delete;
 
     void log(const details::log_msg &msg) override;
+
+ 
     void flush() override;
     void set_pattern(const std::string &pattern) override;
 

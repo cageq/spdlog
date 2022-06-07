@@ -363,16 +363,17 @@ protected:
         }
         SPDLOG_TRY
         {
-            memory_buf_t buf;
-#ifdef SPDLOG_USE_STD_FORMAT
-            fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
-#else
-            // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
-            fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
-#endif
+//             memory_buf_t buf;
+// #ifdef SPDLOG_USE_STD_FORMAT
+//             fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
+// #else
+//             // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
+//             fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
+// #endif
 
             details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
-            log_it_(log_msg, log_enabled, traceback_enabled);
+//             log_it_(log_msg, log_enabled, traceback_enabled);
+            log_it_direct_(log_msg, log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
         }
         SPDLOG_LOGGER_CATCH(loc)
     }
@@ -431,11 +432,28 @@ protected:
     // log the given message (if the given log level is high enough),
     // and save backtrace (if backtrace is enabled).
     void log_it_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled);
+
+    template <class ... Args> 
+    void log_it_direct_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled,string_view_t fmt,  Args &&... args)
+    {
+        if (log_enabled)
+        {
+            for (auto &sink : sinks_)
+            {
+                sink->format_log(log_msg,log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
+            }
+        }
+        if (traceback_enabled)
+        {
+            tracer_.log(log_msg);
+        }
+    }
+
     virtual void sink_it_(const details::log_msg &msg);
     virtual void flush_();
     void dump_backtrace_();
     bool should_flush_(const details::log_msg &msg);
-
+ 
     // handle errors during logging.
     // default handler prints the error to stderr at max rate of 1 message/sec.
     void err_handler_(const std::string &msg);
