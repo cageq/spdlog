@@ -37,7 +37,7 @@ class shm_sink : public base_sink<Mutex>
         
     }
     ~shm_sink(){
-      
+      flush_(); 
     }
 protected:
       
@@ -50,8 +50,7 @@ protected:
 
     void sink_it_(const details::log_msg &msg) override
     { 
-        spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, log_buffer_);
-        
+        spdlog::sinks::base_sink<Mutex>::formatter_->format(msg, log_buffer_);        
     }
     void flush_() override {
         log_buffer_.flush(); 

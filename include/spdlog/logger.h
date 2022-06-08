@@ -378,18 +378,18 @@ protected:
         }
         SPDLOG_TRY
         {
-//             memory_buf_t buf;
-// #ifdef SPDLOG_USE_STD_FORMAT
-//             fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
-// #else
-//             // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
-//             fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
-// #endif
+            memory_buf_t buf;
+#ifdef SPDLOG_USE_STD_FORMAT
+            fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
+#else
+            // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
+            fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
+#endif
 
-            //details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
-            details::log_msg log_msg(loc, name_, lvl,string_view_t{});
-//             log_it_(log_msg, log_enabled, traceback_enabled);
-            log_it_direct_(log_msg, log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
+            details::log_msg log_msg(loc, name_, lvl, string_view_t(buf.data(), buf.size()));
+           // details::log_msg log_msg(loc, name_, lvl,string_view_t{});
+             log_it_(log_msg, log_enabled, traceback_enabled);
+ //           log_it_direct_(log_msg, log_enabled    std::forward<Args>(args)...);
         }
         SPDLOG_LOGGER_CATCH(loc)
     }
