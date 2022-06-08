@@ -320,7 +320,7 @@ void android_example()
 class my_formatter_flag : public spdlog::custom_flag_formatter
 {
 public:
-    void format(const spdlog::details::log_msg &, const std::tm &, spdlog::memory_buf_t &dest) override
+    void format(const spdlog::details::log_msg &, const std::tm &,  fmt::detail::buffer<char> &dest) override
     {
         std::string some_txt = "custom-flag";
         dest.append(some_txt.data(), some_txt.data() + some_txt.size());

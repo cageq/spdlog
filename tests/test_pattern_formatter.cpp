@@ -330,7 +330,7 @@ public:
         : some_txt{std::move(txt)}
     {}
 
-    void format(const spdlog::details::log_msg &, const std::tm &tm, spdlog::memory_buf_t &dest) override
+    void format(const spdlog::details::log_msg &, const std::tm &tm, fmt::detail::buffer<char> &dest) override
     {
         if (some_txt == "throw_me")
         {

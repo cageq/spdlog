@@ -802,7 +802,7 @@ template <typename T> class buffer {
 
   /** Increases the buffer capacity to hold at least *capacity* elements. */
   virtual FMT_CONSTEXPR20 void grow(size_t capacity) = 0;
-
+   
  public:
   using value_type = T;
   using const_reference = const T&;
@@ -818,6 +818,9 @@ template <typename T> class buffer {
 
   /** Returns the size of this buffer. */
   constexpr auto size() const FMT_NOEXCEPT -> size_t { return size_; }
+
+virtual FMT_CONSTEXPR20 void resize(size_t count) {}
+
 
   /** Returns the capacity of this buffer. */
   constexpr auto capacity() const FMT_NOEXCEPT -> size_t { return capacity_; }

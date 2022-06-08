@@ -47,6 +47,7 @@ public:
     level::level_enum level() const;
     bool should_log(level::level_enum msg_level) const;
 
+ //   fmt::detail::buffer<char>  * log_buffer_; 
 protected:
     // sink log level - default is all
     level_t level_{level::trace};

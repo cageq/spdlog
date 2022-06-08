@@ -55,7 +55,11 @@ public:
     {}
     flag_formatter() = default;
     virtual ~flag_formatter() = default;
-    virtual void format(const details::log_msg &msg, const std::tm &tm_time, memory_buf_t &dest) = 0;
+   // virtual void format(const details::log_msg &msg, const std::tm &tm_time, memory_buf_t &dest) = 0;
+
+    virtual void format(const details::log_msg &msg, const std::tm &tm_time, fmt::detail::buffer<char> &dest) {
+        
+    }
 
 protected:
     padding_info padinfo_;
@@ -89,7 +93,8 @@ public:
     pattern_formatter &operator=(const pattern_formatter &other) = delete;
 
     std::unique_ptr<formatter> clone() const override;
-    void format(const details::log_msg &msg, memory_buf_t &dest) override;
+    //void format(const details::log_msg &msg, memory_buf_t &dest) override;
+    void format(const details::log_msg &msg, fmt::detail::buffer<char> &dest) override;
 
     template<typename T, typename... Args>
     pattern_formatter &add_flag(char flag, Args &&... args)
