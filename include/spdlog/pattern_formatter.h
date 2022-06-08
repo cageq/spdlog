@@ -57,10 +57,7 @@ public:
     virtual ~flag_formatter() = default;
    // virtual void format(const details::log_msg &msg, const std::tm &tm_time, memory_buf_t &dest) = 0;
 
-    virtual void format(const details::log_msg &msg, const std::tm &tm_time, fmt::detail::buffer<char> &dest) {
-        
-    }
-
+    virtual void format(const details::log_msg &msg, const std::tm &tm_time, fmt::detail::buffer<char> &dest)  = 0; 
 protected:
     padding_info padinfo_;
 };

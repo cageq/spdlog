@@ -27,7 +27,7 @@ template<typename T, size_t SIZE = init_shm_size, typename Allocator = std::allo
 class basic_shm_buffer final : public detail::buffer<T>
 {
 private:
-    uint64_t block_pos = 0;
+    
     uint64_t write_pos = 0;
 
     uint64_t init_size = 0;
@@ -38,8 +38,7 @@ private:
     std::string file_path;
 
     void init_mmap_file( const std::string & filePath = "/dev/shm/fmt.log" )
-    {
-        
+    {        
         file_path = filePath;
         log_file = fopen(filePath.c_str(), "ab+");
         // fseek(log_file,0,SEEK_END);
@@ -48,7 +47,7 @@ private:
         init_size = SIZE;
         mmap_blocks = mmap_block_size;
         ftruncate(log_fd, SIZE);
-        block_pos = 0;
+        
         mmap_file = (char *)mmap(NULL, mmap_block_size, PROT_WRITE, MAP_FILE | MAP_SHARED, log_fd, 0);
     }
 
@@ -58,6 +57,7 @@ private:
         if (mmap_file != nullptr)
         {
             munmap(mmap_file, mmap_block_size);
+            write_pos += this->size(); 
             ftruncate(log_fd, write_pos);
             if (log_file != nullptr)
             {
@@ -67,7 +67,7 @@ private:
         }
     }
 
-    bool remap(int64_t pos)
+    bool remap()
     {
         // printf("remap file  blocks %lu\n",  mmap_blocks);
         munmap(mmap_file, mmap_block_size);
@@ -81,9 +81,10 @@ private:
                 return false;
             }
         }
-
+        write_pos += mmap_block_size; 
         // fseek(log_file,0,pos );
-        block_pos = 0;
+        
+        this->clear(); 
         mmap_file = (char *)mmap(NULL, mmap_block_size, PROT_WRITE, MAP_FILE | MAP_SHARED, log_fd, mmap_blocks);
         if (mmap_file == MAP_FAILED)
         {
@@ -116,7 +117,7 @@ public:
     }
 
     void flush()   {
-        msync(mmap_file,block_pos, MS_SYNC); 
+        msync(mmap_file,0, MS_SYNC); 
     }
 
 
@@ -129,7 +130,7 @@ private:
             this->set(other.data(), other.size());
             other.set(nullptr, 0);
 
-            block_pos = other.block_pos;
+            
             write_pos = other.write_pos;
             init_size = other.init_size;
             mmap_blocks = other.mmap_blocks;
@@ -138,7 +139,7 @@ private:
             mmap_file = other.mmap_file;
             file_path = other.file_path;
 
-            other.block_pos = 0;
+            
             other.write_pos = 0;
             other.init_size = 0;
             other.mmap_blocks = 0;
@@ -208,8 +209,8 @@ FMT_CONSTEXPR20 void basic_shm_buffer<T, SIZE, Allocator>::grow(size_t size)
     const size_t max_size = init_shm_size;
     size_t old_capacity = this->capacity();
     size_t new_capacity = init_shm_size ;
-    remap(write_pos);
-    this->clear(); 
+    remap();
+    
     T *new_data = mmap_file;
     this->set(new_data, new_capacity);
 }

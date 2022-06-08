@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(spdlog_examples CXX)
 
- set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -g  -O2 -Wno-unused-function -fvisibility=hidden   -Wno-deprecated-declarations ")
+ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pthread -g  -Wno-unused-function -fvisibility=hidden   -Wno-deprecated-declarations ")
 if(NOT TARGET spdlog)
     # Stand-alone build
     find_package(spdlog REQUIRED)
@@ -33,3 +33,8 @@ target_link_libraries(testshm PRIVATE spdlog::spdlog)
 
 add_executable(testfmt testfmt.cpp)
 target_link_libraries(testfmt  PRIVATE spdlog::spdlog)
+
+
+
+add_executable(shmlog shmlog.cpp)
+target_link_libraries(shmlog PRIVATE spdlog::spdlog)
