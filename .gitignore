@@ -47,6 +47,7 @@ example/*
 !example/example.cpp
 !example/testshm.cpp
 !example/testfmt.cpp
+!example/shmlog.cpp
 !example/bench.cpp
 !example/utils.h
 !example/Makefile*
