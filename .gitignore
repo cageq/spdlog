@@ -46,6 +46,7 @@ build/*
 example/*
 !example/example.cpp
 !example/testshm.cpp
+!example/testfmt.cpp
 !example/bench.cpp
 !example/utils.h
 !example/Makefile*
