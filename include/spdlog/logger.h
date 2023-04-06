@@ -449,6 +449,8 @@ protected:
     // and save backtrace (if backtrace is enabled).
     void log_it_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled);
 
+
+memory_buf_t log_buffer_;   
     template <class ... Args> 
     void  log_it_direct_(const details::log_msg &log_msg, bool log_enabled, bool traceback_enabled,string_view_t fmt,  Args &&... args)
     {
@@ -459,17 +461,17 @@ protected:
                 bool ret = sink->format_log(log_msg,log_enabled, traceback_enabled, fmt,  std::forward<Args>(args)...);
                 if (!ret)
                 {
-
-                memory_buf_t buf;   
+                log_buffer_.clear();
+               // memory_buf_t buf;   
     #ifdef SPDLOG_USE_STD_FORMAT
                 fmt_lib::vformat_to(std::back_inserter(buf), fmt, fmt_lib::make_format_args(std::forward<Args>(args)...));
     #else
                 // seems that fmt::detail::vformat_to(buf, ...) is ~20ns faster than fmt::vformat_to(std::back_inserter(buf),..)
-                fmt::detail::vformat_to(buf, fmt, fmt::make_format_args(std::forward<Args>(args)...));
+                fmt::detail::vformat_to(log_buffer_, fmt, fmt::make_format_args(std::forward<Args>(args)...));
     #endif
                     //log_msg.payload = std::move(string_view_t(buf.data(), buf.size()));
 
-                     details::log_msg msg (log_msg.source, log_msg.logger_name, log_msg.level, string_view_t(buf.data(), buf.size()));
+                    details::log_msg msg (log_msg.source, log_msg.logger_name, log_msg.level, string_view_t(log_buffer_.data(), log_buffer_.size()));
                     sink->log(msg);
                 }
             }
